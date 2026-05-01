@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据录入 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 800px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        .form-group select, .form-group input {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;
+        }
+        .submit-btn {
+            width: 100%; padding: 12px; background: #667eea; color: white; border: none;
+            border-radius: 5px; font-size: 16px; cursor: pointer; transition: background 0.3s;
+        }
+        .submit-btn:hover { background: #5568d3; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data">基础数据管理</a></li>
+            <li><a href="/data-entry" class="active">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2>原料/能源消耗录入</h2>
+            <form id="entryForm">
+                <div class="form-group">
+                    <label>工序</label>
+                    <select id="processId" required>
+                        <option value="">请选择工序</option>
+                        <option th:each="p : ${processes}" th:value="${p.id}" th:text="${p.processName}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>类型</label>
+                    <select id="typeSelect" required>
+                        <option value="">请选择类型</option>
+                        <option value="material">原料</option>
+                        <option value="energy">能源</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>名称</label>
+                    <select id="materialEnergyId" required>
+                        <option value="">请先选择类型</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>消耗量</label>
+                    <input type="number" id="consumeValue" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>单位</label>
+                    <input type="text" id="unit" required>
+                </div>
+                <button type="submit" class="submit-btn">提交并自动计算碳排放</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const materials = /*[[${materials}]]*/ [];
+        const energies = /*[[${energies}]]*/ [];
+        
+        document.getElementById('typeSelect').addEventListener('change', function() {
+            const select = document.getElementById('materialEnergyId');
+            select.innerHTML = '<option value="">请选择</option>';
+            const items = this.value === 'material' ? materials : energies;
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name + ' (' + item.unit + ')';
+                select.appendChild(option);
+            });
+        });
+        
+        document.getElementById('materialEnergyId').addEventListener('change', function() {
+            const all = [...materials, ...energies];
+            const selected = all.find(x => x.id == this.value);
+            if (selected) {
+                document.getElementById('unit').value = selected.unit;
+            }
+        });
+        
+        document.getElementById('entryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const data = {
+                processId: parseInt(document.getElementById('processId').value),
+                materialEnergyId: parseInt(document.getElementById('materialEnergyId').value),
+                consumeValue: parseFloat(document.getElementById('consumeValue').value),
+                unit: document.getElementById('unit').value
+            };
+            try {
+                const res = await fetch('/api/consumption', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert('录入成功！已自动计算碳排放量');
+                    this.reset();
+                }
+            } catch (err) {
+                alert('录入失败');
+            }
+        });
+    </script>
+</body>
+</html>

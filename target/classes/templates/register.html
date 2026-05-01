@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 500px;
+        }
+        .register-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-group { flex: 1; }
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .register-btn:hover { background: #5568d3; }
+        .login-link { text-align: center; margin-top: 20px; }
+        .login-link a { color: #667eea; }
+        .error { color: red; text-align: center; margin-bottom: 15px; }
+        .success { color: green; text-align: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>用户注册</h1>
+        <div class="error" th:if="${error}">[[${error}]]</div>
+        <div class="success" th:if="${success}">[[${success}]]</div>
+        <form th:action="@{/register}" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>登录名 *</label>
+                    <input type="text" name="username" required placeholder="请输入登录名">
+                </div>
+                <div class="form-group">
+                    <label>真实姓名 *</label>
+                    <input type="text" name="realName" required placeholder="请输入真实姓名">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>密码 *</label>
+                <input type="password" name="password" required placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <label>确认密码 *</label>
+                <input type="password" name="confirmPassword" required placeholder="请再次输入密码">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>邮箱</label>
+                    <input type="email" name="email" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label>电话</label>
+                    <input type="tel" name="phone" placeholder="请输入电话">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>所属部门</label>
+                <select name="deptId">
+                    <option value="">请选择部门</option>
+                    <option th:each="dept : ${depts}" th:value="${dept.id}" th:text="${dept.deptName}"></option>
+                </select>
+            </div>
+            <button type="submit" class="register-btn">注册</button>
+            <div class="login-link">已有账号？<a href="/login">立即登录</a></div>
+        </form>
+    </div>
+</body>
+</html>

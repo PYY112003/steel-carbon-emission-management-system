@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.carbon.mapper.ConsumptionRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.steel.carbon.entity.ConsumptionRecord">
+        <id column="id" property="id"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="process_id" property="processId"/>
+        <result column="material_energy_id" property="materialEnergyId"/>
+        <result column="consume_value" property="consumeValue"/>
+        <result column="unit" property="unit"/>
+        <result column="input_user_id" property="inputUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="process_name" property="processName"/>
+        <result column="material_energy_name" property="materialEnergyName"/>
+        <result column="material_energy_type" property="materialEnergyType"/>
+        <result column="input_user_name" property="inputUserName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.steel.carbon.entity.ConsumptionRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO consumption_record (record_date, process_id, material_energy_id, consume_value, unit, input_user_id)
+        VALUES (#{recordDate}, #{processId}, #{materialEnergyId}, #{consumeValue}, #{unit}, #{inputUserId})
+    </insert>
+
+    <update id="update" parameterType="com.steel.carbon.entity.ConsumptionRecord">
+        UPDATE consumption_record
+        <set>
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+            <if test="processId != null">process_id = #{processId},</if>
+            <if test="materialEnergyId != null">material_energy_id = #{materialEnergyId},</if>
+            <if test="consumeValue != null">consume_value = #{consumeValue},</if>
+            <if test="unit != null">unit = #{unit},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM consumption_record WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT cr.*, p.process_name, me.name as material_energy_name, me.type as material_energy_type, u.real_name as input_user_name
+        FROM consumption_record cr
+        LEFT JOIN process_info p ON cr.process_id = p.id
+        LEFT JOIN material_energy_info me ON cr.material_energy_id = me.id
+        LEFT JOIN sys_user u ON cr.input_user_id = u.id
+        WHERE cr.id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT cr.*, p.process_name, me.name as material_energy_name, me.type as material_energy_type, u.real_name as input_user_name
+        FROM consumption_record cr
+        LEFT JOIN process_info p ON cr.process_id = p.id
+        LEFT JOIN material_energy_info me ON cr.material_energy_id = me.id
+        LEFT JOIN sys_user u ON cr.input_user_id = u.id
+        ORDER BY cr.create_time DESC
+    </select>
+
+    <select id="selectByDateRange" resultMap="BaseResultMap">
+        SELECT cr.*, p.process_name, me.name as material_energy_name, me.type as material_energy_type, u.real_name as input_user_name
+        FROM consumption_record cr
+        LEFT JOIN process_info p ON cr.process_id = p.id
+        LEFT JOIN material_energy_info me ON cr.material_energy_id = me.id
+        LEFT JOIN sys_user u ON cr.input_user_id = u.id
+        WHERE cr.record_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY cr.record_date DESC
+    </select>
+
+    <select id="selectByProcessId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT cr.*, p.process_name, me.name as material_energy_name, me.type as material_energy_type, u.real_name as input_user_name
+        FROM consumption_record cr
+        LEFT JOIN process_info p ON cr.process_id = p.id
+        LEFT JOIN material_energy_info me ON cr.material_energy_id = me.id
+        LEFT JOIN sys_user u ON cr.input_user_id = u.id
+        WHERE cr.process_id = #{processId}
+        ORDER BY cr.create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.carbon.mapper.ProductionRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.steel.carbon.entity.ProductionRecord">
+        <id column="id" property="id"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="process_id" property="processId"/>
+        <result column="output_value" property="outputValue"/>
+        <result column="unit" property="unit"/>
+        <result column="input_user_id" property="inputUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="process_name" property="processName"/>
+        <result column="input_user_name" property="inputUserName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.steel.carbon.entity.ProductionRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO production_record (record_date, process_id, output_value, unit, input_user_id)
+        VALUES (#{recordDate}, #{processId}, #{outputValue}, #{unit}, #{inputUserId})
+    </insert>
+
+    <update id="update" parameterType="com.steel.carbon.entity.ProductionRecord">
+        UPDATE production_record
+        <set>
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+            <if test="processId != null">process_id = #{processId},</if>
+            <if test="outputValue != null">output_value = #{outputValue},</if>
+            <if test="unit != null">unit = #{unit},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM production_record WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT pr.*, p.process_name, u.real_name as input_user_name
+        FROM production_record pr
+        LEFT JOIN process_info p ON pr.process_id = p.id
+        LEFT JOIN sys_user u ON pr.input_user_id = u.id
+        WHERE pr.id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT pr.*, p.process_name, u.real_name as input_user_name
+        FROM production_record pr
+        LEFT JOIN process_info p ON pr.process_id = p.id
+        LEFT JOIN sys_user u ON pr.input_user_id = u.id
+        ORDER BY pr.create_time DESC
+    </select>
+
+    <select id="selectByDateRange" resultMap="BaseResultMap">
+        SELECT pr.*, p.process_name, u.real_name as input_user_name
+        FROM production_record pr
+        LEFT JOIN process_info p ON pr.process_id = p.id
+        LEFT JOIN sys_user u ON pr.input_user_id = u.id
+        WHERE pr.record_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY pr.record_date DESC
+    </select>
+
+    <select id="selectByProcessId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT pr.*, p.process_name, u.real_name as input_user_name
+        FROM production_record pr
+        LEFT JOIN process_info p ON pr.process_id = p.id
+        LEFT JOIN sys_user u ON pr.input_user_id = u.id
+        WHERE pr.process_id = #{processId}
+        ORDER BY pr.create_time DESC
+    </select>
+
+</mapper>

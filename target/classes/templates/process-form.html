@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工序管理 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 600px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;
+        }
+        .form-group textarea { resize: vertical; }
+        .btn-group { display: flex; gap: 15px; }
+        .btn {
+            padding: 12px 30px; background: #667eea; color: white; border: none;
+            border-radius: 5px; font-size: 14px; cursor: pointer;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-secondary { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data" class="active">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2 th:text="${process?.id ? '编辑工序' : '新增工序'}">新增工序</h2>
+            <form th:action="${process?.id ? '/basic-data/process/edit/' + process.id : '/basic-data/process/add'}" method="post">
+                <div class="form-group">
+                    <label>工序名称 *</label>
+                    <input type="text" name="processName" th:value="${process?.processName}" required>
+                </div>
+                <div class="form-group">
+                    <label>所属部门 *</label>
+                    <select name="deptId" required>
+                        <option value="">请选择部门</option>
+                        <option th:each="dept : ${depts}" th:value="${dept.id}" 
+                                th:text="${dept.deptName}" 
+                                th:selected="${dept.id == process?.deptId}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" rows="3" th:text="${process?.description}"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='/basic-data/process'">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

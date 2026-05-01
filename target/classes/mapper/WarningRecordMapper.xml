@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.carbon.mapper.WarningRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.steel.carbon.entity.WarningRecord">
+        <id column="id" property="id"/>
+        <result column="rule_id" property="ruleId"/>
+        <result column="process_id" property="processId"/>
+        <result column="warning_content" property="warningContent"/>
+        <result column="level" property="level"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="rule_name" property="ruleName"/>
+        <result column="process_name" property="processName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.steel.carbon.entity.WarningRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO warning_record (rule_id, process_id, warning_content, level, status)
+        VALUES (#{ruleId}, #{processId}, #{warningContent}, #{level}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.steel.carbon.entity.WarningRecord">
+        UPDATE warning_record
+        <set>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM warning_record WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT wr.*, r.rule_name, p.process_name
+        FROM warning_record wr
+        LEFT JOIN warning_rule r ON wr.rule_id = r.id
+        LEFT JOIN process_info p ON wr.process_id = p.id
+        WHERE wr.id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT wr.*, r.rule_name, p.process_name
+        FROM warning_record wr
+        LEFT JOIN warning_rule r ON wr.rule_id = r.id
+        LEFT JOIN process_info p ON wr.process_id = p.id
+        ORDER BY wr.create_time DESC
+    </select>
+
+    <select id="selectByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT wr.*, r.rule_name, p.process_name
+        FROM warning_record wr
+        LEFT JOIN warning_rule r ON wr.rule_id = r.id
+        LEFT JOIN process_info p ON wr.process_id = p.id
+        WHERE wr.status = #{status}
+        ORDER BY wr.create_time DESC
+    </select>
+
+</mapper>

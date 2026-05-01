@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计分析 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; }
+        .filter-bar select, .filter-bar input {
+            padding: 10px; border: 1px solid #ddd; border-radius: 5px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics" class="active">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2>月度统计</h2>
+            <div class="filter-bar">
+                <select id="yearSelect">
+                    <option th:each="y : ${#numbers.sequence(2020, 2030)}" 
+                            th:value="${y}" 
+                            th:text="${y}"
+                            th:selected="${y == year}"></option>
+                </select>
+                <select id="monthSelect">
+                    <option th:each="m : ${#numbers.sequence(1, 12)}" 
+                            th:value="${m}" 
+                            th:text="${m} + '月'"
+                            th:selected="${m == month}"></option>
+                </select>
+                <button onclick="filterData()" style="padding:10px 20px;background:#667eea;color:white;border:none;border-radius:5px;cursor:pointer;">查询</button>
+                <a id="exportBtn" style="padding:10px 20px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer;text-decoration:none;">导出Excel</a>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>工序</th><th>原料/能源</th><th>消耗量</th><th>排放因子</th><th>碳排放量</th><th>日期</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${emissions}">
+                        <td th:text="${e.processName}">-</td>
+                        <td th:text="${e.materialEnergyName}">-</td>
+                        <td th:text="${e.consumeValue}">-</td>
+                        <td th:text="${e.emissionFactor}">-</td>
+                        <td th:text="${e.emissionValue}">-</td>
+                        <td th:text="${e.recordDate}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>按工序统计</h2>
+            <table>
+                <thead>
+                    <tr><th>工序名称</th><th>碳排放总量（吨CO₂）</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="stat : ${processStats}">
+                        <td th:text="${stat.processName}">-</td>
+                        <td th:text="${stat.totalEmission}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function filterData() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            window.location.href = '/statistics?year=' + year + '&month=' + month;
+        }
+        
+        function updateExportUrl() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            document.getElementById('exportBtn').href = '/export/monthly-report?year=' + year + '&month=' + month;
+        }
+        
+        document.getElementById('yearSelect').addEventListener('change', updateExportUrl);
+        document.getElementById('monthSelect').addEventListener('change', updateExportUrl);
+        updateExportUrl();
+    </script>
+</body>
+</html>

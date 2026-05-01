@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预警管理 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px;
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; }
+        .level-low { color: #52c41a; }
+        .level-medium { color: #faad14; }
+        .level-high { color: #ff4d4f; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings" class="active">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2>预警规则</h2>
+            <table>
+                <thead>
+                    <tr><th>规则名称</th><th>预警类型</th><th>阈值</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rule : ${rules}">
+                        <td th:text="${rule.ruleName}">-</td>
+                        <td th:text="${rule.warningType}">-</td>
+                        <td th:text="${rule.thresholdValue}">-</td>
+                        <td th:text="${rule.status == 1 ? '启用' : '停用'}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>预警记录</h2>
+            <table>
+                <thead>
+                    <tr><th>预警内容</th><th>级别</th><th>工序</th><th>状态</th><th>创建时间</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${records}">
+                        <td th:text="${record.warningContent}">-</td>
+                        <td th:class="'level-' + ${record.level}" th:text="${record.level}">-</td>
+                        <td th:text="${record.processName}">-</td>
+                        <td th:text="${record.status == 0 ? '未处理' : '已处理'}">-</td>
+                        <td th:text="${record.createTime}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

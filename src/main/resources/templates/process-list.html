@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工序管理 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 1200px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section h2 { color: #333; }
+        .btn {
+            padding: 10px 20px; background: #667eea; color: white; border: none;
+            border-radius: 5px; font-size: 14px; cursor: pointer; text-decoration: none;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-edit { background: #17a2b8; }
+        .btn-edit:hover { background: #138496; }
+        .btn-delete { background: #dc3545; }
+        .btn-delete:hover { background: #c82333; }
+        .btn-status { padding: 10px 20px; font-size: 14px; background: #17a2b8; }
+        .btn-status:hover { background: #138496; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; }
+        .status-active { color: #52c41a; }
+        .status-inactive { color: #ff4d4f; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data" class="active">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <div class="section-header">
+                <h2>工序管理</h2>
+                <a href="/basic-data/process/add" class="btn">新增工序</a>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>工序名称</th><th>所属部门</th><th>描述</th><th>状态</th><th>创建时间</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="process : ${processes}">
+                        <td th:text="${process.processName}">-</td>
+                        <td th:text="${process.deptName}">-</td>
+                        <td th:text="${process.description} ? ${process.description} : '-'">-</td>
+                        <td>
+                            <span th:class="${process.status == 1 ? 'status-active' : 'status-inactive'}"
+                                  th:text="${process.status == 1 ? '启用' : '停用'}">-</span>
+                        </td>
+                        <td th:text="${process.createTime}">-</td>
+                        <td>
+                            <button class="btn btn-status" 
+                                    onclick="toggleStatus(${process.id})"
+                                    th:text="${process.status == 1 ? '停用' : '启用'}"></button>
+                            <button class="btn btn-delete" 
+                               onclick="deleteProcess(${process.id})">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function toggleStatus(id) {
+            fetch('/basic-data/process/status/' + id, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        location.reload();
+                    }
+                });
+        }
+        function deleteProcess(id) {
+            if (confirm('确定删除该工序吗？')) {
+                fetch('/basic-data/process/delete/' + id, { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

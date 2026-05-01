@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基础数据管理 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .nav-tab {
+            padding: 10px 20px; background: white; border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;
+        }
+        .nav-tab:hover { background: #f0f0f0; }
+        .nav-tab a { color: #333; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a href="/profile">个人中心</a>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data" class="active">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="nav-tabs">
+            <div class="nav-tab"><a href="/basic-data/dept">部门管理</a></div>
+            <div class="nav-tab"><a href="/basic-data/process">工序管理</a></div>
+            <div class="nav-tab"><a href="/basic-data/material-energy?type=原料">原料管理</a></div>
+            <div class="nav-tab"><a href="/basic-data/material-energy?type=能源">能源管理</a></div>
+        </div>
+    </div>
+</body>
+</html>

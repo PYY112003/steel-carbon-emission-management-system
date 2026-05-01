@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+        .nav a {
+            display: block;
+            padding: 20px 0;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container {
+            padding: 30px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 { color: #888; font-size: 14px; margin-bottom: 10px; }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f9fa; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <span>欢迎，<span th:text="${user?.realName}">用户</span></span>
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard" class="active">仪表盘</a></li>
+            <li><a href="/basic-data">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>本月碳排放总量（吨CO₂）</h3>
+                <div class="value" th:text="${totalEmissionMonth}">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>本年碳排放总量（吨CO₂）</h3>
+                <div class="value" th:text="${totalEmissionYear}">0</div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>各工序碳排放统计（本月）</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>工序名称</th>
+                        <th>碳排放量（吨CO₂）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="stat : ${processStats}">
+                        <td th:text="${stat.processName}">-</td>
+                        <td th:text="${stat.totalEmission}">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

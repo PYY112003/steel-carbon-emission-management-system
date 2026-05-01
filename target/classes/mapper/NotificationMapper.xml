@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.carbon.mapper.NotificationMapper">
+
+    <resultMap id="BaseResultMap" type="com.steel.carbon.entity.Notification">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="is_read" property="isRead"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="user_name" property="userName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.steel.carbon.entity.Notification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notification (user_id, title, content, type, is_read)
+        VALUES (#{userId}, #{title}, #{content}, #{type}, #{isRead})
+    </insert>
+
+    <update id="update" parameterType="com.steel.carbon.entity.Notification">
+        UPDATE notification
+        <set>
+            <if test="isRead != null">is_read = #{isRead},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM notification WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT n.*, u.real_name as user_name
+        FROM notification n
+        LEFT JOIN sys_user u ON n.user_id = u.id
+        WHERE n.id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT n.*, u.real_name as user_name
+        FROM notification n
+        LEFT JOIN sys_user u ON n.user_id = u.id
+        WHERE n.user_id = #{userId}
+        ORDER BY n.create_time DESC
+    </select>
+
+    <select id="selectUnreadByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT n.*, u.real_name as user_name
+        FROM notification n
+        LEFT JOIN sys_user u ON n.user_id = u.id
+        WHERE n.user_id = #{userId} AND n.is_read = 0
+        ORDER BY n.create_time DESC
+    </select>
+
+    <select id="countUnreadByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM notification WHERE user_id = #{userId} AND is_read = 0
+    </select>
+
+</mapper>

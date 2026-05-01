@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原料/能源管理 - 钢铁企业碳排放数据管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f7fa; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; }
+        .user-info a { color: white; text-decoration: none; }
+        .nav {
+            background: white; padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav ul { list-style: none; display: flex; gap: 30px; }
+        .nav a { display: block; padding: 20px 0; color: #333; text-decoration: none; font-weight: 500; }
+        .nav a:hover, .nav a.active { color: #667eea; border-bottom: 3px solid #667eea; }
+        .container { padding: 30px 40px; max-width: 600px; margin: 0 auto; }
+        .section {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 { margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;
+        }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-group { flex: 1; }
+        .btn-group { display: flex; gap: 15px; }
+        .btn {
+            padding: 12px 30px; background: #667eea; color: white; border: none;
+            border-radius: 5px; font-size: 14px; cursor: pointer;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-secondary { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>钢铁企业碳排放数据管理与统计分析系统</h1>
+        <div class="user-info">
+            <a th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <ul>
+            <li><a href="/dashboard">仪表盘</a></li>
+            <li><a href="/basic-data" class="active">基础数据管理</a></li>
+            <li><a href="/data-entry">数据录入</a></li>
+            <li><a href="/statistics">统计分析</a></li>
+            <li><a href="/warnings">预警管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2 th:text="${item?.id ? '编辑' + type : '新增' + type}">新增原料/能源</h2>
+            <form th:action="${item?.id ? '/basic-data/material-energy/edit/' + item.id : '/basic-data/material-energy/add'}" method="post">
+                <input type="hidden" name="type" th:value="${type}">
+                <div class="form-group">
+                    <label>名称 *</label>
+                    <input type="text" name="name" th:value="${item?.name}" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>单位 *</label>
+                        <input type="text" name="unit" th:value="${item?.unit}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>排放因子 *</label>
+                        <input type="number" step="0.0001" name="emissionFactor" th:value="${item?.emissionFactor}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>因子来源</label>
+                    <input type="text" name="factorSource" th:value="${item?.factorSource}">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea name="remark" rows="3" th:text="${item?.remark}"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='/basic-data/material-energy?type=' + '${type}'">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
